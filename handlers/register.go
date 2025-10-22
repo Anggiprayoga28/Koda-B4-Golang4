@@ -7,7 +7,14 @@ import (
 	"strings"
 )
 
-func RegisterUser(service *models.UserService, scanner *bufio.Scanner) {
+func RegisterUser(service models.AuthService, scanner *bufio.Scanner) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("\nError: %v\n", r)
+			waitEnter(scanner)
+		}
+	}()
+
 	defer waitEnter(scanner)
 
 	fmt.Println("\n---- Register ----")
@@ -18,8 +25,7 @@ func RegisterUser(service *models.UserService, scanner *bufio.Scanner) {
 	confirmPassword := getInput("Confirm your password: ", scanner)
 
 	if password != confirmPassword {
-		fmt.Println("\nPassword doesn't match!")
-		return
+		panic("Password doesn't match!")
 	}
 
 	fmt.Println("\nIs it true?")
@@ -35,8 +41,7 @@ func RegisterUser(service *models.UserService, scanner *bufio.Scanner) {
 
 	err := service.Register(firstName, lastName, email, password)
 	if err != nil {
-		fmt.Printf("\n%s Press enter to back..\n", err.Error())
-		return
+		panic(err.Error())
 	}
 
 	fmt.Println("\nRegister success, press enter to back..")
