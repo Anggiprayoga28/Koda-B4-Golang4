@@ -5,6 +5,7 @@ import (
 	"Golang4/models"
 	"bufio"
 	"fmt"
+
 	"os"
 	"strings"
 )
@@ -15,7 +16,7 @@ func main() {
 	defer fmt.Println("\nThank you for using our system!")
 
 	scanner = bufio.NewScanner(os.Stdin)
-	var users []*models.User
+	service := models.NewUserService()
 
 	for {
 		showMainMenu()
@@ -23,9 +24,9 @@ func main() {
 
 		switch choice {
 		case "1":
-			handlers.RegisterUser(&users, scanner)
+			handlers.RegisterUser(service, scanner)
 		case "2":
-			fmt.Println("Menu Login")
+			handlers.LoginUser(service, scanner)
 		case "3":
 			fmt.Println("Menu Lupa Password")
 		case "0":
