@@ -5,7 +5,6 @@ import (
 	"Golang4/models"
 	"bufio"
 	"fmt"
-
 	"os"
 	"strings"
 )
@@ -14,6 +13,13 @@ var scanner *bufio.Scanner
 
 func main() {
 	defer fmt.Println("\nThank you for using our system!")
+
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("\nSystem panic: %v\n", r)
+			fmt.Println("Program recovered and will exit safely.")
+		}
+	}()
 
 	scanner = bufio.NewScanner(os.Stdin)
 	service := models.NewUserService()
@@ -28,7 +34,7 @@ func main() {
 		case "2":
 			handlers.LoginUser(service, scanner)
 		case "3":
-			fmt.Println("Menu Lupa Password")
+			handlers.ForgotPassword(service, scanner)
 		case "0":
 			fmt.Println("\nGoodbye!")
 			os.Exit(0)
