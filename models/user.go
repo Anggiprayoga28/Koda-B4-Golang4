@@ -2,6 +2,20 @@ package models
 
 import "fmt"
 
+type UserInterface interface {
+	GetFullName() string
+	GetEmail() string
+	GetPassword() string
+	SetPassword(password string)
+}
+
+type AuthService interface {
+	Register(firstName, lastName, email, password string) error
+	Login(email, password string) (UserInterface, error)
+	ResetPassword(email, newPassword string) error
+	GetAllUsers() []UserInterface
+}
+
 type User struct {
 	FirstName string
 	LastName  string
@@ -29,14 +43,18 @@ type UserService struct {
 	users []*User
 }
 
-func NewUserService() *UserService {
+func NewUserService() AuthService {
 	return &UserService{
 		users: make([]*User, 0),
 	}
 }
 
 func (s *UserService) Register(firstName, lastName, email, password string) error {
-	defer func() {}()
+	defer func() {
+		if r := recover(); r != nil {
+			panic(r)
+		}
+	}()
 
 	if firstName == "" || lastName == "" || email == "" || password == "" {
 		return fmt.Errorf("All fields are required!")
@@ -61,8 +79,12 @@ func (s *UserService) Register(firstName, lastName, email, password string) erro
 	return nil
 }
 
-func (s *UserService) Login(email, password string) (*User, error) {
-	defer func() {}()
+func (s *UserService) Login(email, password string) (UserInterface, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			panic(r)
+		}
+	}()
 
 	for _, user := range s.users {
 		if user.Email == email {
@@ -76,7 +98,11 @@ func (s *UserService) Login(email, password string) (*User, error) {
 }
 
 func (s *UserService) ResetPassword(email, newPassword string) error {
-	defer func() {}()
+	defer func() {
+		if r := recover(); r != nil {
+			panic(r)
+		}
+	}()
 
 	for _, user := range s.users {
 		if user.Email == email {
@@ -89,6 +115,16 @@ func (s *UserService) ResetPassword(email, newPassword string) error {
 	return fmt.Errorf("Email not found")
 }
 
-func (s *UserService) GetAllUsers() []*User {
-	return s.users
+func (s *UserService) GetAllUsers() []UserInterface {
+	defer func() {
+		if r := recover(); r != nil {
+			panic(r)
+		}
+	}()
+
+	result := make([]UserInterface, len(s.users))
+	for i, user := range s.users {
+		result[i] = user
+	}
+	return result
 }
