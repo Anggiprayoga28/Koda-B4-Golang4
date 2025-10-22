@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func RegisterUser(users *[]*models.User, scanner *bufio.Scanner) {
+func RegisterUser(service *models.UserService, scanner *bufio.Scanner) {
 	defer waitEnter(scanner)
 
 	fmt.Println("\n---- Register ----")
@@ -33,23 +33,11 @@ func RegisterUser(users *[]*models.User, scanner *bufio.Scanner) {
 		return
 	}
 
-	for _, user := range *users {
-		if user.Email == email {
-			fmt.Println("\nEmail is used! Press enter to back..")
-			return
-		}
+	err := service.Register(firstName, lastName, email, password)
+	if err != nil {
+		fmt.Printf("\n%s Press enter to back..\n", err.Error())
+		return
 	}
-
-	hashedPassword := models.HashPassword(password)
-
-	newUser := &models.User{
-		FirstName: firstName,
-		LastName:  lastName,
-		Email:     email,
-		Password:  hashedPassword,
-	}
-
-	*users = append(*users, newUser)
 
 	fmt.Println("\nRegister success, press enter to back..")
 }
