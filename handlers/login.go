@@ -7,7 +7,14 @@ import (
 	"os"
 )
 
-func LoginUser(service *models.UserService, scanner *bufio.Scanner) {
+func LoginUser(service models.AuthService, scanner *bufio.Scanner) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("\nError: %v\n", r)
+			waitEnter(scanner)
+		}
+	}()
+
 	defer waitEnter(scanner)
 
 	fmt.Println("\n---- Login ----")
@@ -17,8 +24,7 @@ func LoginUser(service *models.UserService, scanner *bufio.Scanner) {
 
 	user, err := service.Login(email, password)
 	if err != nil {
-		fmt.Println("\nWrong email or password, press enter to restart")
-		return
+		panic("Wrong email or password, press enter to restart")
 	}
 
 	fmt.Println("\nLogin success, press enter to back..")
@@ -27,7 +33,13 @@ func LoginUser(service *models.UserService, scanner *bufio.Scanner) {
 	showUserMenu(user, service, scanner)
 }
 
-func showUserMenu(user *models.User, service *models.UserService, scanner *bufio.Scanner) {
+func showUserMenu(user models.UserInterface, service models.AuthService, scanner *bufio.Scanner) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("\nError: %v\n", r)
+		}
+	}()
+
 	for {
 		fmt.Println("\n---- Welcome to system ----")
 		fmt.Printf("\nHello %s!\n", user.GetEmail())
@@ -53,7 +65,13 @@ func showUserMenu(user *models.User, service *models.UserService, scanner *bufio
 	}
 }
 
-func listAllUsers(service *models.UserService, scanner *bufio.Scanner) {
+func listAllUsers(service models.AuthService, scanner *bufio.Scanner) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("\nError: %v\n", r)
+		}
+	}()
+
 	defer waitEnter(scanner)
 
 	fmt.Println("\n---- List all users ----")
